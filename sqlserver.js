@@ -7,11 +7,9 @@ class SQLServerDriver {
     #pool;
     #config;
     
-    constructor( { server, user, password, database, options } ) {
-        this.#config = { server, user, password, database, options };
+    constructor( ) {
+        this.#config = config.sqlConfig;
     }
-
-    
 
     async #connect( ) { this.#pool = await sql.connect( this.#config ); }
 
@@ -22,15 +20,21 @@ class SQLServerDriver {
             if( this.#pool ) {
                 let result = await this.#pool.request( ).query( query );
 
-                return result.recordset;
+                if( result.recordset.length > 1 )
+                    return [ ...result.recordset ];
+
+                if( result.recordset.length == 1 ) 
+                    return { ...result.recordset[ 0 ] };
+
+                return null;
             } else {
                 throw new Error( "Could not reconnect to database" );
             }
         } catch ( e ) {
             console.error( e );
+            return null;
         }
     }
 }
 
-const { server, password, user, database, options } = { ...config.sqlConfig };
-module.exports = new SQLServerDriver( { server, user, password, database, options  } );
+module.exports = new SQLServerDriver( );
