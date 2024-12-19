@@ -3,6 +3,7 @@ const User = require('./user');
 const Project = require('./project');
 const Activity = require('./activity');
 const Request = require('./request');
+const RequestItem = require('./requestItems');
 
 User.belongsToMany( Project, { through: "UsersProjects", foreignKey: "userId", as: "projects" });
 Project.belongsToMany( User, { through: "UsersProjects", foreignKey: "projectId", as: "users" });
@@ -10,6 +11,10 @@ Project.belongsToMany( User, { through: "UsersProjects", foreignKey: "projectId"
 Project.hasMany( Activity, { foreignKey: "project", as: "activities" } );
 
 User.hasMany( Request, { foreignKey: "createdBy", as: "requests" } );
+
+Request.hasMany( RequestItem, { foreignKey: "request", as: "items" });
+Activity.hasMany( RequestItem, { foreignKey: "activity", as: "requests" });
+User.hasMany( RequestItem, { foreignKey: "assignee", as: "tasks" });
 
 // Sync all models
 async function syncDatabase() {
