@@ -3,10 +3,8 @@ process.env.TZ = "UTC";
 
 const express = require( "express" );
 const cors = require( "cors" );
-const sql = require( "mssql" );
 const config = require( "./config.js" );
-
-const pool = new sql.ConnectionPool( config.sqlConfig );
+const { syncDatabase } = require( "./models/index.js" );
 
 const app = express( );
 
@@ -43,18 +41,15 @@ function startServer( ) {
 
 ( async function main( ) {
     try {
-        pool.connect( )
-        .then( pool => {
-            app.locals.db = pool;
-            
+        syncDatabase( )
+        .then( ( ) => {
             registerEventHandlers( );
             registerControllers( );
             startServer( );    
         })
         .catch( err => {
-            console.error( "SQL Database connection failed: ", err );
-            process.exit( )
-        });
+            console.error( "Could not connect to database: ", err );
+        } );
     } catch ( e ) {
         console.error( "Error while starting app: ", e );
     }

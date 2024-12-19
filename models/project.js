@@ -1,33 +1,21 @@
 "use strict";
 
-class Project {
-    id;
-    title;
-    
-    #pascalToCamelCase(str) {
-        if (!str || typeof str !== "string") return "";
-        return str.charAt(0).toLowerCase() + str.slice(1);
+const { DataTypes } = require( "sequelize" );
+const sequelize = require( "../sequelize" );
+
+const Project = sequelize.define( "Project", {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    description: {
+        type: DataTypes.STRING
     }
-    
-    mapFromSql( row ) {
-        const user = new Project( );
-        
-        for( const [ key, val ] of Object.entries( row ) ) {
-            user[ this.#pascalToCamelCase( key ) ] = val;
-        }
+}, { tableName: "Projects", timestamps: true } );
 
-        return user;
-    }
-
-    /**
-     * 
-     * @returns {object} Plain Object
-     */
-    toPlain( ) {
-        return Object.assign( { }, this );
-    }
-}
-
-const projectModel = new Project( );
-
-module.exports = projectModel;
+module.exports = Project;

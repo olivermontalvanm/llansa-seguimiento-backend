@@ -1,46 +1,50 @@
 "use strict";
 
-const { Sequelize, DataTypes, Model } = require( "sequelize" );
+const { DataTypes } = require( "sequelize" );
+const sequelize = require( "../sequelize" );
 
-const sequelize = new Sequelize( 'Llansa_Test', "sa", "aI!hACGq5MkUt&", {
-    host: "18.118.245.231",
-    dialect: "mssql"
-} )
-
-class User {
-    id;
-    firstname;
-    lastname;
-    projects = [];
-    
-    #pascalToCamelCase(str) {
-        if (!str || typeof str !== "string") return "";
-        return str.charAt(0).toLowerCase() + str.slice(1);
+const User = sequelize.define( "User", {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    firstname: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    lastname: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
+    },
+    role: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    forgotPassword: {
+        type: DataTypes.BOOLEAN,
+    },
+    canResetPassword: {
+        type: DataTypes.BOOLEAN,
     }
-    
-    mapFromSql( row ) {
-        const user = new User( );
-        
-        for( const [ key, val ] of Object.entries( row ) ) {
-            user[ this.#pascalToCamelCase( key ) ] = val;
-        }
+}, { tableName: "Users", timestamps: true } );
 
-        return user;
-    }
-    
-    getFullName( ) {
-        return `${ this.firstname } ${ this.lastname }`;
-    }
-
-    /**
-     * 
-     * @returns {object} Plain Object
-     */
-    toPlain( ) {
-        return Object.assign( { }, this );
-    }
-}
-
-const userModel = new User( );
-
-module.exports = userModel;
+module.exports = User;
