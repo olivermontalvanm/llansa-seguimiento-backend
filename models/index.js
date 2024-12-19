@@ -1,9 +1,15 @@
 const sequelize = require('../sequelize');
 const User = require('./user');
 const Project = require('./project');
+const Activity = require('./activity');
+const Request = require('./request');
 
 User.belongsToMany( Project, { through: "UsersProjects", foreignKey: "userId", as: "projects" });
 Project.belongsToMany( User, { through: "UsersProjects", foreignKey: "projectId", as: "users" });
+
+Project.hasMany( Activity, { foreignKey: "project", as: "activities" } );
+
+User.hasMany( Request, { foreignKey: "createdBy", as: "requests" } );
 
 // Sync all models
 async function syncDatabase() {

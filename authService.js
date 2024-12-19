@@ -5,6 +5,7 @@ const jwt = require( "jsonwebtoken" );
 const config = require( "./config" );
 const User = require( "./models/user" );
 const Project = require( "./models/project" );
+const Activity = require("./models/activity");
 
 class AuthService {
     constructor( ) {
@@ -12,16 +13,20 @@ class AuthService {
     }
 
     async login( { username, password } ) {
-        let user = await User.findOne( { where: {
-            username, password
-        }, include: [
-            {
+        let user = await User.findOne( { 
+            where: {
+                username, password
+            }, 
+            include: [ {
                 model: Project,
                 as: "projects",
                 through: { attributes: [ ] },
-                
-            }
-        ] } );
+                include: [ {
+                    model: Activity,
+                    as: "activities"
+                } ]
+            } ]
+        } );
 
         user = user.toJSON( )
 

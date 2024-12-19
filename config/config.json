@@ -1,0 +1,15 @@
+{
+    "development": {
+        "username": "sa",
+        "password": "aI!hACGq5MkUt&",
+        "database": "Llansa_Test",
+        "host": "18.118.245.231",
+        "dialect": "mssql",
+        "dialectOptions": {
+            "options": {
+                "encrypt": false,
+                "trustServerCertificate": true
+            }
+        }    
+    }
+}
