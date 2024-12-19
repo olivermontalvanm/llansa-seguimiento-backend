@@ -14,7 +14,12 @@ const Request = sequelize.define( "Request", {
     },
     status: {
         type: DataTypes.STRING,
-        defaultValue: "CREATED"
+        defaultValue: "CREATED",
+        validate: {
+            isIn: [ [
+                'CREATED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'
+            ] ]
+        }
     },
     archived: {
         type: DataTypes.BOOLEAN,

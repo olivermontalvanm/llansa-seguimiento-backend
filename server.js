@@ -36,7 +36,7 @@ function startServer( ) {
         process.send( "ready" );
     } );
 
-    console.info( `Started app at: http://localhost:${ config.app.port }`);
+    console.info( `Application listening at: http://localhost:${ config.app.port }`);
 }
 
 ( async function main( ) {
