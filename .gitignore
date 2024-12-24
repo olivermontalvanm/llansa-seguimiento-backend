@@ -2,3 +2,4 @@
 .env
 /.pm2
 /seeders
+/test_data

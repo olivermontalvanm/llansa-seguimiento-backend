@@ -1,5 +1,16 @@
 const xlsx = require('xlsx');
 const path = require('path');
+const dayjs = require( "dayjs" );
+const _ = require( "lodash" );
+
+function stringToNumber(input) {
+  // Remove commas and parse the string as a float
+  let r = parseFloat(input.replace(/,/g, ''));
+
+  if( isNaN( r ) ) r = 0;
+
+  return r;
+}
 
 // Function to read data from an Excel file
 function readExcelFile(filePath) {
@@ -66,12 +77,6 @@ function readExcelFile(filePath) {
       process.exit( );
     }
 
-    // TODO Know from which row the data actually starts
-    /**
-     * Its necessary to find out where the header is and where
-     * the data starts.
-     */
-
     const parsedData = data.slice( ( headerIndex + 1)).map( d => {
       const o = {};
       let i = 0;
@@ -84,7 +89,27 @@ function readExcelFile(filePath) {
       return o;
     } ); 
 
-    const filteredData = parsedData.filter( p => p.reqNumber !== null );
+    const filteredData = parsedData.filter( p => p.reqNumber !== null ).map( row => {
+      const newObj = Object.assign( {}, row );
+
+      newObj.costStatus = row?.costStatus ? row.costStatus.trim( ) : null;
+      newObj.reqDate = row?.reqDate ? dayjs( row.reqDate ).toDate( ) : null;
+      newObj.dueDate = row?.dueDate ? dayjs( row.dueDate ).toDate( ) : null;
+      newObj.dateReceived = row?.dateReceived ? dayjs( row.dateReceived ).toDate( ) : null;
+      newObj.finishedDate = row?.finishedDate ? dayjs( row.finishedDate ).toDate( ) : null;
+      newObj.pendingDays = row?.pendingDays ? stringToNumber( row.pendingDays ) : 0;
+      newObj.quantity = row?.quantity ? stringToNumber( row.quantity ) : 0;
+      newObj.processTotalDuration = row?.processTotalDuration ? stringToNumber( row.processTotalDuration ) : 0;
+
+      return newObj;
+    });
+
+    if( !Array.isArray( filteredData ) ) throw new Error( "Result is not an array" );
+
+    if( filteredData.length < 1 ) {
+      console.info( "Did not find any data" );
+      process.exit( 0 );
+    }
 
     return filteredData;
   } catch (error) {
@@ -92,11 +117,18 @@ function readExcelFile(filePath) {
   }
 }
 
-// Path to the Excel file
-const filePath = path.resolve(__dirname, './test_data/Pista Juan Pablo II SPC.xlsx');
+function transformData( rows ) {
+  const projects = _.groupBy( rows, "activity" );
 
-// Fetch and display data from the Excel file
-const data = readExcelFile(filePath);
+  console.debug( Object.keys( projects ) );
+  console.debug( rows[ 0 ] );
+  
+}
 
-console.debug( data );
+function main( ) {
+  const filePath = path.resolve(__dirname, './test_data/Pista Juan Pablo II SPC.xlsx');
+  const parsedData = transformData( readExcelFile( filePath ) );
+}
+
+main( );
 
