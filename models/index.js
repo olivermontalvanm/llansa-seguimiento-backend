@@ -15,6 +15,7 @@ User.hasMany( Request, { foreignKey: "createdBy", as: "requests" } );
 Request.hasMany( RequestItem, { foreignKey: "request", as: "items" });
 Activity.hasMany( RequestItem, { foreignKey: "activity", as: "requests" });
 User.hasMany( RequestItem, { foreignKey: "assignee", as: "tasks" });
+User.hasMany( Request, { foreignKey: "createdBy", as: "taskCreatedBy" } );
 
 // Sync all models
 async function syncDatabase() {
