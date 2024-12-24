@@ -12,7 +12,6 @@ class AuthController {
         this.router.post( "/login", [ ], this.postLogin.bind( this ) );
         this.router.post( "/logout", [ hasToken ], this.postLogout.bind( this ) );
         this.router.get( "/loggedUser", [ hasToken ], this.getLoggedUser.bind( this ) );
-        this.router.post( "/test", [ hasToken ], this.jwtTest.bind( this ) );
     }
 
     async getLoggedUser( req, res ) {
@@ -63,12 +62,6 @@ class AuthController {
             console.error( e );
             return res.status( 500 ).json( { message: "Internal server error" } );
         }
-    }
-
-    async jwtTest( req, res ) {
-        console.debug( { reqUser: req.user } );
-
-        return res.status( 200 ).json( { message: "OK" } );
     }
 }
 

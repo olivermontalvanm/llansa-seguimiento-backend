@@ -20,8 +20,6 @@ class ProjectController {
 
             if( !projects ) throw new Error( "Could not get logged user" );
 
-            console.debug( projects );
-
             return res.status( 200 ).json( projects );
         } catch ( e ) {
             console.error( e );
