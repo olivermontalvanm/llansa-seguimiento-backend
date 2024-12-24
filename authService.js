@@ -16,16 +16,7 @@ class AuthService {
         let user = await User.findOne( { 
             where: {
                 username, password
-            }, 
-            include: [ {
-                model: Project,
-                as: "projects",
-                through: { attributes: [ ] },
-                include: [ {
-                    model: Activity,
-                    as: "activities"
-                } ]
-            } ]
+            }
         } );
 
         user = user.toJSON( )
