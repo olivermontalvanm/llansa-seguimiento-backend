@@ -13,10 +13,12 @@ function registerControllers( ) {
     app.set( "trust proxy", true );
 
     const AuthController = require( "./authController.js" );
+    const ProjectController = require( "./projectController.js" );
     
     app.use( cors( { credentials: true, origin: true } ) );
     app.use( express.json( ) );
     app.use( "/api/v1/auth/", AuthController.router );
+    app.use( "/api/v1/project/", ProjectController.router );
 }
 
 function registerEventHandlers( ) {
@@ -27,6 +29,11 @@ function registerEventHandlers( ) {
 
     process.on( "SIGINT", err => {
         console.error( "process.on(SIGINT): ", err );
+        process.exit( );
+    } );
+
+    process.on( "ETIMEOUT", err => {
+        console.error( "process.on(ETIMEOUT): ", err );
         process.exit( );
     } );
 }
