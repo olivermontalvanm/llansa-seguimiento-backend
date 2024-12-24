@@ -10,15 +10,18 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
     "mssql": "^11.0.1",
     "os": "^0.1.2",
     "path": "^0.12.7",
-    "sequelize": "^6.37.5"
+    "sequelize": "^6.37.5",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "sequelize-cli": "^6.6.2"
