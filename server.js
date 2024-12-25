@@ -14,11 +14,15 @@ function registerControllers( ) {
 
     const AuthController = require( "./authController.js" );
     const ProjectController = require( "./projectController.js" );
+    const RequestController = require( "./requestController.js" );
+    const AdminController = require( "./adminController.js" );
     
     app.use( cors( { credentials: true, origin: true } ) );
     app.use( express.json( ) );
     app.use( "/api/v1/auth/", AuthController.router );
     app.use( "/api/v1/project/", ProjectController.router );
+    app.use( "/api/v1/request/", RequestController.router );
+    app.use( "/api/v1/admin/", AdminController.router );
 }
 
 function registerEventHandlers( ) {

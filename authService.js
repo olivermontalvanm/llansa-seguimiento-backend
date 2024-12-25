@@ -6,6 +6,7 @@ const config = require( "./config" );
 const User = require( "./models/user" );
 const Project = require( "./models/project" );
 const Activity = require("./models/activity");
+const Role = require("./models/role");
 
 class AuthService {
     constructor( ) {
@@ -16,13 +17,17 @@ class AuthService {
         let user = await User.findOne( { 
             where: {
                 username, password
+            },
+            include: {
+                model: Role,
+                as: "userRole"
             }
-        } );
-
-        user = user.toJSON( )
+        }, { raw: true } );
 
         if( !user )
             return null;
+
+        user = user.toJSON( )
 
         delete user.password;
 

@@ -35,20 +35,6 @@ const User = sequelize.define( "User", {
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    role: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-            isIn: [ [
-                "Administrador de Proyecto",
-                "ITS",
-                "Jefe de Compras",
-                "Analista de Compras",
-                "Gerente",
-                "Administrador"
-            ] ]
-        }
-    },
     forgotPassword: {
         type: DataTypes.BOOLEAN,
     },
