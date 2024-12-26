@@ -43,7 +43,15 @@ class AuthController {
                 return res.status( 400 ).json( { message: "Bad Request" } );
             }
 
-            const userAndToken = await AuthService.login( { username, password } );
+            let userAndToken;
+
+            const passwordRenewalUser = await AuthService.shouldRenewPassword( { username } );
+
+            if( passwordRenewalUser ) {
+                userAndToken = await AuthService.renewPassword( passwordRenewalUser, password );
+            } else {
+                userAndToken = await AuthService.login( { username, password } );
+            }
 
             if( !userAndToken ) return res.status( 401 ).json( { message: "Unauthorized" } );
             

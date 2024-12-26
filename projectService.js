@@ -33,6 +33,18 @@ class ProjectService {
             console.error( e );
         }
     }
+
+    async createProject( project ) {
+        try {
+            let newProject = await Project.create( { ...project } );
+
+            newProject.toJSON( );
+
+            return newProject;
+        } catch ( e ) {
+            console.error( e );
+        }
+    }
 }
 
 const authService = new ProjectService( );
