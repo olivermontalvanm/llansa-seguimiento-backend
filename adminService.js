@@ -18,7 +18,7 @@ class AdminService {
 
     }
 
-    async getUsers( currentUserId, page, itemsPerPage, excludeSelfUser ) {
+    async getUsers( currentUserId, page, itemsPerPage, nameFilter, excludeSelfUser ) {
         try {
             const query = {
                 include: [
@@ -31,6 +31,9 @@ class AdminService {
 
             if( excludeSelfUser )
                 query.where = { id: { [ Op.not ]: currentUserId } };
+
+            if( nameFilter )
+                query.where = { ...query.where, firstname: { [Op.like]: `%${nameFilter}%` } }
             
             let result = await User.findAll( { ...query }, { raw: true } );
 

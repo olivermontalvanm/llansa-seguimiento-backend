@@ -17,17 +17,18 @@ class AdminController {
         try {
             const joiSchema = Joi.object( {
                 page: Joi.number( ).default( 1 ).min( 1 ),
-                itemsPerPage: Joi.number( ).default( 20 ).min( 5 )
+                itemsPerPage: Joi.number( ).default( 20 ).min( 5 ),
+                name: Joi.string( ).optional( )
             } );
 
-            const { error, value: { page, itemsPerPage } } = joiSchema.validate( req.body, { allowUnknown: false } );
+            const { error, value: { page, itemsPerPage, name } } = joiSchema.validate( req.query, { allowUnknown: false } );
 
             if( error ) {
                 console.error( error );
                 return res.status( 400 ).json( { message: "Bad Request" } );
             }
             
-            const requests = await AdminService.getUsers( req.user.id, page, itemsPerPage, true );
+            const requests = await AdminService.getUsers( req.user.id, page, itemsPerPage, name, true );
 
             if( !requests ) throw new Error( "Could not get requests" );
 
