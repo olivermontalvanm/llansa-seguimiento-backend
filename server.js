@@ -17,6 +17,7 @@ function registerControllers( ) {
     const RequestController = require( "./requestController.js" );
     const AdminController = require( "./adminController.js" );
     const CatalogController = require( "./catalogController.js" );
+    const SummaryController = require( "./summaryController.js" );
     
     app.use( cors( { credentials: true, origin: true } ) );
     app.use( express.json( ) );
@@ -25,6 +26,7 @@ function registerControllers( ) {
     app.use( "/api/v1/request/", RequestController.router );
     app.use( "/api/v1/admin/", AdminController.router );
     app.use( "/api/v1/catalog/", CatalogController.router );
+    app.use( "/api/v1/summary/", SummaryController.router );
 }
 
 function registerEventHandlers( ) {

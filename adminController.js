@@ -18,17 +18,29 @@ class AdminController {
             const joiSchema = Joi.object( {
                 page: Joi.number( ).default( 1 ).min( 1 ),
                 itemsPerPage: Joi.number( ).default( 20 ).min( 5 ),
-                name: Joi.string( ).optional( )
+                name: Joi.string( ).optional( ),
+                project: Joi.number( ).optional( ),
+                status: Joi.number( ).optional( )
             } );
 
-            const { error, value: { page, itemsPerPage, name } } = joiSchema.validate( req.query, { allowUnknown: false } );
+            const { error, value: { page, itemsPerPage, name, project, status } } = joiSchema.validate( req.query, { allowUnknown: false } );
 
             if( error ) {
                 console.error( error );
                 return res.status( 400 ).json( { message: "Bad Request" } );
             }
-            
-            const requests = await AdminService.getUsers( req.user.id, page, itemsPerPage, name, true );
+
+            let filters = null;
+
+            if( name || project || status ) {
+                filters = {};
+                
+                if( name ) filters.name = name;
+                if( project ) filters.project = project;
+                if( status !== undefined ) filters.status = status;
+            }
+
+            const requests = await AdminService.getUsers( req.user.id, page, itemsPerPage, filters, true );
 
             if( !requests ) throw new Error( "Could not get requests" );
 
