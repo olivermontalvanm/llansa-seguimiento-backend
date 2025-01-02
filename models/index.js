@@ -3,9 +3,9 @@ const User = require('./user');
 const Project = require('./project');
 const Activity = require('./activity');
 const Request = require('./request');
-const RequestItem = require('./requestItems');
 const Item = require('./item');
 const Role = require('./role');
+const Note = require('./note');
 
 //  Users-Projects
 User.belongsToMany( Project, { through: "UsersProjects", foreignKey: "userId", as: "projects" });
@@ -18,25 +18,25 @@ Activity.belongsTo( Project, { foreignKey: "project", as: "projectActivities" })
 User.hasMany( Request, { foreignKey: "createdBy", as: "requests" } );
 Request.belongsTo( User, { foreignKey: "createdBy", as: "userRequests" })
 
-//  Request-RequestItems
-Request.hasMany(RequestItem, { foreignKey: 'requestId', as: 'requestItems' });
-RequestItem.belongsTo(Request, { foreignKey: 'requestId', as: 'request' });
-
-//  RequestItem-Item
-RequestItem.belongsTo(Item, { foreignKey: 'itemId', as: 'item' });
-Item.hasMany(RequestItem, { foreignKey: 'itemId', as: 'requestItems' });
-
-//  RequestItem-User
-RequestItem.belongsTo(User, { foreignKey: 'assignee', as: 'user' });
-User.hasMany(RequestItem, { foreignKey: 'assignee', as: 'requestUsers' });
-
-//  RequestItem-Activity
-RequestItem.belongsTo(Activity, { foreignKey: 'activityId', as: 'activity' });
-Activity.hasMany(RequestItem, { foreignKey: 'activityId', as: 'requestActivities' });
-
 //  User-Role
 Role.hasOne( User, { foreignKey: "roleId", as: "role" } );
 User.belongsTo( Role, { foreignKey: "roleId", as: "userRole" })
+
+//  Requests
+Request.belongsTo( Activity, { foreignKey: "activityId" });
+Activity.hasMany( Request, { foreignKey: "activityId" } );
+
+Request.belongsTo( User, { foreignKey: "assignee" } );
+User.hasMany( Request, { foreignKey: "assignee" } );
+
+Item.hasMany( Request, { foreignKey: "itemId" } );
+Request.belongsTo( Item, { foreignKey: "itemId" } );
+
+Request.hasMany( Note, { foreignKey: "requestId" } );
+Note.belongsTo( Request, { foreignKey: "requestId" } );
+
+User.hasOne( Note, { foreignKey: "userId" } );
+Note.belongsTo( User, { foreignKey: "userId" } );
 
 // Sync all models
 async function syncDatabase() {
