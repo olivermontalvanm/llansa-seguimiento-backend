@@ -17,7 +17,7 @@ class ProjectController {
         try {
             if( !req.user ) return res.status( 401 ).json( { message: "Unauthorized" } );
             
-            const projects = await CatalogService.getAllProjectOptions( );
+            const projects = await CatalogService.getAllProjectOptions( req.user );
 
             if( !projects ) throw new Error( "Could not get logged user" );
 

@@ -2,15 +2,28 @@
 
 const Project = require( "./models/project" );
 const Role = require("./models/role");
+const User = require("./models/user");
 
 class ProjectService {
     constructor( ) {
 
     }
 
-    async getAllProjectOptions( ) {
+    async getAllProjectOptions( user ) {
         try {
-            let result = await Project.findAll( { }, { raw: true } );
+            const { userRole: { title: userRole }, id } = user;
+
+            let where = {};
+
+            //  HACK Use constant instead of literal
+            if( userRole == "Administrador de Proyecto" && id )
+                where = { id };
+
+            let result = await Project.findAll( {
+                include: [
+                    { model: User, as: "users", where }
+                ]
+            }, { raw: true } );
 
             let projects = result.map( r => r.toJSON( ) );
 

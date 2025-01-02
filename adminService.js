@@ -45,11 +45,11 @@ class AdminService {
                 ...query, 
                 include: [
                     { model: Role, as: "userRole" },
-                    { model: Project, as: "projects", where: projectWhere, required: true },
+                    { model: Project, as: "projects", where: projectWhere, required: false },
                 ]
-            }, { raw: true } );
+            } );
 
-            result = await User.findAll( {
+            result = await User.findAndCountAll( {
                 where: { id: { [Op.in]: result.map( r => (r.toJSON( )).id ) } },
                 order: [ [ "createdAt", "DESC" ] ],
                 include: [
@@ -58,9 +58,17 @@ class AdminService {
                 ]
             } );
 
-            let users = result.map( r => r.toJSON( ) );
+            const count = await User.count({
+                where: { ...query.where }
+            });
 
-            return users;
+            const users = result?.rows.map( r => r.toJSON( ) );
+
+            return { 
+                data: users, 
+                total: count,
+                pages: Math.ceil( count / itemsPerPage )
+            };
         } catch ( e ) {
             console.error( e );
         }
