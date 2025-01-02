@@ -20,7 +20,7 @@ class AdminController {
                 itemsPerPage: Joi.number( ).default( 20 ).min( 5 ),
                 name: Joi.string( ).optional( ),
                 project: Joi.number( ).optional( ),
-                status: Joi.number( ).optional( )
+                status: Joi.number( ).valid( 0, 1 ).optional( )
             } );
 
             const { error, value: { page, itemsPerPage, name, project, status } } = joiSchema.validate( req.query, { allowUnknown: false } );
@@ -32,7 +32,7 @@ class AdminController {
 
             let filters = null;
 
-            if( name || project || status ) {
+            if( name || project || !isNaN( status ) ) {
                 filters = {};
                 
                 if( name ) filters.name = name;
