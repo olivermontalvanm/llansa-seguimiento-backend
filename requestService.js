@@ -7,7 +7,6 @@ const User = require( "./models/user" );
 const Project = require( "./models/project" );
 const Activity = require("./models/activity");
 const Request = require("./models/request");
-const RequestItem = require("./models/requestItems");
 const Item = require("./models/item");
 const { Op } = require("sequelize")
 
@@ -44,19 +43,7 @@ class RequestService {
             }, { raw: true } );*/
 
 
-            let result = await Request.findAll( {
-                include: {
-                    model: RequestItem,
-                    as: "requestItems",
-                    include: {
-                        model: Item,
-                        as: "item"
-                    },
-                    where: {
-                        status: { [Op.not]: "FINISHED" }
-                    }
-                }
-            } );
+            let result = await Request.findAll( { } );
 
             let projects = result.map( r => r.toJSON( ) );
 
