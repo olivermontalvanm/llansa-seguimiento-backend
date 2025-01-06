@@ -65,8 +65,6 @@ class ProjectService {
 
             let items = result.map( r => r.dataValues );
 
-            console.debug( { items } );
-
             const measureOptions = items.map( m => ( {
                 id: m.id,
                 label: m.title
