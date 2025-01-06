@@ -17,7 +17,7 @@ Project.hasMany( Activity, { foreignKey: "project", as: "activities" } );
 Activity.belongsTo( Project, { foreignKey: "project", as: "projectActivities" })
 
 User.hasMany( Request, { foreignKey: "createdBy", as: "requests" } );
-Request.belongsTo( User, { foreignKey: "createdBy", as: "userRequests" })
+Request.belongsTo( User, { foreignKey: "createdBy", as: "createdByUser" })
 
 //  User-Role
 Role.hasOne( User, { foreignKey: "roleId", as: "role" } );
@@ -27,7 +27,7 @@ User.belongsTo( Role, { foreignKey: "roleId", as: "userRole" })
 Request.belongsTo( Activity, { foreignKey: "activityId" });
 Activity.hasMany( Request, { foreignKey: "activityId" } );
 
-Request.belongsTo( User, { foreignKey: "assignee" } );
+Request.belongsTo( User, { foreignKey: "assignee", as: "assigneeUser" } );
 User.hasMany( Request, { foreignKey: "assignee" } );
 
 Item.hasMany( Request, { foreignKey: "itemId" } );
