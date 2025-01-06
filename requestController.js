@@ -10,6 +10,7 @@ class RequestController {
         this.router = new Router( );
 
         this.router.get( "/getRequests", [ hasToken ], this.getRequests.bind( this ) );
+        this.router.post( "/createRequest", [ hasToken ], this.postCreateRequest.bind( this ) );
     }
 
     async getRequests( req, res ) {
@@ -31,6 +32,37 @@ class RequestController {
             if( !requests ) throw new Error( "Could not get requests" );
 
             return res.status( 200 ).json( requests );
+        } catch ( e ) {
+            console.error( e );
+            return res.status( 500 ).json( { message: "Internal server error" } );
+        }
+    }
+
+    async postCreateRequest( req, res ) {
+        try {
+            const joiSchema = Joi.object( {
+                project: Joi.object( {
+                    id: Joi.number( ).required( ),
+                    title: Joi.string( ).required( )
+                } ).required( ),
+                activity: Joi.string( ).empty( ).required( ),
+                item: Joi.string( ).empty( ).required( ),
+                quantity: Joi.number( ).required( ),
+                measureUnit: Joi.string( ).empty( ).required( )
+            } );
+
+            const { error, value: { project, activity, item, quantity, measureUnit } } = joiSchema.validate( req.body, { allowUnknown: false } );
+
+            if( error ) {
+                console.error( error );
+                return res.status( 400 ).json( { message: "Bad Request" } );
+            }
+
+            const request = await RequestService.createRequest( { project, activity, item, quantity, measureUnit }, req.user.id );
+
+            if( !request ) throw new Error( "Could not create request" );
+
+            return res.status( 200 ).json( request );
         } catch ( e ) {
             console.error( e );
             return res.status( 500 ).json( { message: "Internal server error" } );
