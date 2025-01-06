@@ -1,6 +1,7 @@
 "use strict";
 
 //const sql = require( "./sqlserver" );
+const lodash = require( "lodash" );
 const jwt = require( "jsonwebtoken" );
 const config = require( "./config" );
 const User = require( "./models/user" );
@@ -16,13 +17,48 @@ class RequestService {
 
     }
 
-    async getRequests( status ) {
+    async getRequests( page, itemsPerPage, userRole ) {
         try {
-            let result = await Request.findAll( { } );
+            const query = {
+                offset: ( page - 1 ) * itemsPerPage,
+                limit: itemsPerPage,
+                where: {}
+            };
 
-            let projects = result.map( r => r.toJSON( ) );
+            let result = await Request.findAll( { 
+                ...query,
+                include: [
+                    { model: Item },
+                    { model: Activity, include: [ { model: Project, as: "projectActivities" } ] },
+                    { model: MeasureUnit },
+                    { model: User, as: "createdByUser" }
+                ],
+                order: [ [ "createdAt", "DESC" ] ]
+            } );
 
-            return projects;
+            const count = await Request.count({ distinct: true });
+
+            let requests = result.map( r => r.toJSON( ) ).map( r => ({
+                ...r,
+                item: r.Item,
+                activity: {
+                    ...r.Activity,
+                    projectActivities: undefined
+                },
+                project: r.Activity.projectActivities,
+                measureUnit: r.MeasureUnit,
+                createdBy: r.createdByUser,
+                Item: undefined,
+                Activity: undefined,
+                MeasureUnit: undefined,
+                createdByUser: undefined
+            }));
+
+            return { 
+                data: requests, 
+                total: count, 
+                pages: Math.ceil( count / itemsPerPage )
+            };
         } catch ( e ) {
             console.error( e );
         }
@@ -47,7 +83,7 @@ class RequestService {
 
             activityResult = ( await Activity.findOne( {
                 where: { title: activity, project: projectResult.id }
-            }, { raw: true } ) ).toJSON( );
+            }, { raw: true } ) )?.toJSON( );
 
             //  Create activity if not already exists
             if( !activityResult ) {
@@ -63,7 +99,7 @@ class RequestService {
 
             measureResult = ( await MeasureUnit.findOne( {
                 where: { title: measureUnit }
-            }, { raw: true } ) ).toJSON( );
+            }, { raw: true } ) )?.toJSON( );
 
             //  Create measure if not already exists
             if( !measureResult ) {
@@ -79,7 +115,7 @@ class RequestService {
 
             itemResult = ( await Item.findOne( {
                 where: { title: item }
-            }, { raw: true } ) ).toJSON( );
+            }, { raw: true } ) )?.toJSON( );
 
             //  Create measure if not already exists
             if( !itemResult ) {
