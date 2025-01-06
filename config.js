@@ -21,7 +21,11 @@ const config = {
             idleTimeoutMillis: 30000
         }   
     },
-    jwtSecret: process.env.JWT_SECRET
+    jwtSecret: process.env.JWT_SECRET,
+    email: {
+        user: process.env.MAIL_USER,
+        password: process.env.MAIL_PASS
+    }
 };
 
 module.exports = config;

@@ -18,6 +18,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mssql": "^11.0.1",
+    "nodemailer": "^6.9.16",
     "os": "^0.1.2",
     "path": "^0.12.7",
     "sequelize": "^6.37.5",
