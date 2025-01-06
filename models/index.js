@@ -6,6 +6,7 @@ const Request = require('./request');
 const Item = require('./item');
 const Role = require('./role');
 const Note = require('./note');
+const MeasureUnit = require('./measureUnit');
 
 //  Users-Projects
 User.belongsToMany( Project, { through: "UsersProjects", foreignKey: "userId", as: "projects" });
@@ -37,6 +38,9 @@ Note.belongsTo( Request, { foreignKey: "requestId" } );
 
 User.hasOne( Note, { foreignKey: "userId" } );
 Note.belongsTo( User, { foreignKey: "userId" } );
+
+MeasureUnit.hasMany( Request, { foreignKey: "measureId" } );
+Request.belongsTo( MeasureUnit, { foreignKey: "measureId" })
 
 // Sync all models
 async function syncDatabase() {
