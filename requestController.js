@@ -4,6 +4,7 @@ const { Router } = require("express");
 const Joi = require( "joi" );
 const RequestService = require( "./requestService.js" );
 const { hasToken } = require( "./policies.js" );
+const mailService = require("./mailService.js");
 
 class RequestController {
     constructor( ) {
@@ -16,18 +17,20 @@ class RequestController {
     async getRequests( req, res ) {
         try {
             const joiSchema = Joi.object( {
-                status: Joi.string( ).valid( "pending" ).required( )
+                page: Joi.number( ).default( 1 ).min( 1 ),
+                itemsPerPage: Joi.number( ).default( 5 ).min( 5 )
             } );
 
-            const { error, value: { status } } = joiSchema.validate( req.query, { allowUnknown: false } );
+            const { error, value: { page, itemsPerPage } } = joiSchema.validate( req.query, { allowUnknown: false } );
 
             if( error ) {
                 console.error( error );
                 return res.status( 400 ).json( { message: "Bad Request" } );
             }
 
+            const { userRole: { title: userRole } } = req.user;
 
-            const requests = await RequestService.getRequests( status );
+            const requests = await RequestService.getRequests( page, itemsPerPage, userRole );
 
             if( !requests ) throw new Error( "Could not get requests" );
 
@@ -61,6 +64,8 @@ class RequestController {
             const request = await RequestService.createRequest( { project, activity, item, quantity, measureUnit }, req.user.id );
 
             if( !request ) throw new Error( "Could not create request" );
+
+            //mailService.sendMail( `Tiene un nuevo pedido de ${ quantity } ${ measureUnit } de ${ item }` );
 
             return res.status( 200 ).json( request );
         } catch ( e ) {
