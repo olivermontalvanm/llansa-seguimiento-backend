@@ -44,7 +44,7 @@ class AdminService {
                 ...query, 
                 include: [
                     { model: Role, as: "userRole" },
-                    { model: Project, as: "projects", where: projectWhere, required: !!filters?.project },
+                    { model: Project, as: "projects", where: projectWhere, required: ( !!filters?.project || !!filters?.name ) },
                 ],
                 order: [ [ "createdAt", "DESC" ], [ "id", "DESC" ] ]
             } );
@@ -62,9 +62,10 @@ class AdminService {
                 where: { ...query.where },
                 include: [
                     { model: Role, as: "userRole" },
-                    { model: Project, as: "projects", where: projectWhere, required: !!filters?.project },
+                    { model: Project, as: "projects", where: projectWhere, required: ( !!filters?.project || !!filters?.name ) },
                 ],
-                order: [ [ "createdAt", "DESC" ], [ "id", "DESC" ] ]
+                order: [ [ "createdAt", "DESC" ], [ "id", "DESC" ] ],
+                distinct: true
             });
 
             const users = result?.rows.map( r => r.toJSON( ) );
