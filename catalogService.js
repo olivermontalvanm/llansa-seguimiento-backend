@@ -3,6 +3,8 @@
 const Project = require( "./models/project" );
 const Role = require("./models/role");
 const User = require("./models/user");
+const Item = require("./models/item");
+const MeasureUnit = require("./models/measureUnit");
 
 class ProjectService {
     constructor( ) {
@@ -33,6 +35,44 @@ class ProjectService {
             } ) );
 
             return options;
+        } catch ( e ) {
+            console.error( e );
+        }
+    }
+
+    async getAllItemOptions( ) {
+        try {
+            let result = await Item.findAll( { }, { raw: true } );
+
+            let items = result.map( r => r.toJSON( ) );
+
+            const itemOptions = items.map( p => ( {
+                id: p.id,
+                label: p.title
+            } ) );
+
+            return itemOptions;
+        } catch ( e ) {
+            console.error( e );
+        }
+    }
+
+    async getAllMeasureUnitOptions( ) {
+        //  TODO get measure units by material
+        
+        try {
+            let result = await MeasureUnit.findAll( { }, { raw: true } );
+
+            let items = result.map( r => r.dataValues );
+
+            console.debug( { items } );
+
+            const measureOptions = items.map( m => ( {
+                id: m.id,
+                label: m.title
+            } ) );
+
+            return measureOptions;
         } catch ( e ) {
             console.error( e );
         }
