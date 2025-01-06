@@ -53,10 +53,6 @@ const Request = sequelize.define( "Request", {
     quantity: {
         type: DataTypes.DOUBLE,
         allowNull: false
-    },
-    measureUnit: {
-        type: DataTypes.STRING,
-        allowNull: false
     }
 
 }, { tableName: "Requests", timestamps: true } );
