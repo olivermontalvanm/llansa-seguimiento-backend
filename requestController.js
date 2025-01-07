@@ -18,7 +18,7 @@ class RequestController {
         try {
             const joiSchema = Joi.object( {
                 page: Joi.number( ).default( 1 ).min( 1 ),
-                itemsPerPage: Joi.number( ).default( 5 ).min( 5 )
+                itemsPerPage: Joi.number( ).default( 20 ).min( 5 )
             } );
 
             const { error, value: { page, itemsPerPage } } = joiSchema.validate( req.query, { allowUnknown: false } );
