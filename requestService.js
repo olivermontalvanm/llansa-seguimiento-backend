@@ -40,19 +40,21 @@ class RequestService {
             if( [ "Analista de Compras" ].includes( userRole ) )
                 query.where = { ...query.where, assignee: userId, costStatus: "REVISADO" };
 
+            const include = [
+                { model: Item },
+                activityInclude,
+                { model: MeasureUnit },
+                { model: User, as: "createdByUser" },
+                { model: User, as: "assigneeUser" }
+            ];
+
             let result = await Request.findAll( { 
                 ...query,
-                include: [
-                    { model: Item },
-                    activityInclude,
-                    { model: MeasureUnit },
-                    { model: User, as: "createdByUser" },
-                    { model: User, as: "assigneeUser" }
-                ],
+                include,
                 order: [ [ "createdAt", "DESC" ] ],
             } );
 
-            const count = await Request.count({ distinct: true });
+            const count = await Request.count({ ...query, include });
 
             let requests = result.map( r => r.toJSON( ) ).map( r => ({
                 ...r,
