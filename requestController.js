@@ -30,9 +30,9 @@ class RequestController {
                 return res.status( 400 ).json( { message: "Bad Request" } );
             }
 
-            const { userRole: { title: userRole } } = req.user;
+            const { userRole: { title: userRole }, id: userId } = req.user;
 
-            const requests = await RequestService.getRequests( page, itemsPerPage, userRole );
+            const requests = await RequestService.getRequests( page, itemsPerPage, userId, userRole );
 
             if( !requests ) throw new Error( "Could not get requests" );
 

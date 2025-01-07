@@ -11,13 +11,14 @@ const Request = require("./models/request");
 const Item = require("./models/item");
 const { Op } = require("sequelize");
 const MeasureUnit = require("./models/measureUnit");
+const sequelize = require("./sequelize");
 
 class RequestService {
     constructor( ) {
 
     }
 
-    async getRequests( page, itemsPerPage, userRole ) {
+    async getRequests( page, itemsPerPage, userId, userRole ) {
         try {
             const query = {
                 offset: ( page - 1 ) * itemsPerPage,
@@ -25,16 +26,27 @@ class RequestService {
                 where: {}
             };
 
+            let userProjects = ( await sequelize.query( `SELECT projectId FROM UsersProjects WHERE userId = ${ userId }`, { raw: true } ) )[ 0 ];
+
+            userProjects = userProjects.map( up => up.projectId );
+
+            const activityInclude = [ "Administrador de Proyecto" ].includes( userRole ) ? 
+            { model: Activity, include: [ { model: Project, as: "projectActivities", where: { id: { [Op.in]: userProjects } }, required: true } ], required: true } :
+            { model: Activity, include: [ { model: Project, as: "projectActivities" } ], required: true };
+
+            if( [ "Jefe de Compras" ].includes( userRole ) )
+                query.where = { ...query.where, costStatus: "REVISADO" };
+
             let result = await Request.findAll( { 
                 ...query,
                 include: [
                     { model: Item },
-                    { model: Activity, include: [ { model: Project, as: "projectActivities" } ] },
+                    activityInclude,
                     { model: MeasureUnit },
                     { model: User, as: "createdByUser" },
                     { model: User, as: "assigneeUser" }
                 ],
-                order: [ [ "createdAt", "DESC" ] ]
+                order: [ [ "createdAt", "DESC" ] ],
             } );
 
             const count = await Request.count({ distinct: true });
@@ -46,7 +58,7 @@ class RequestService {
                     ...r.Activity,
                     projectActivities: undefined
                 },
-                project: r.Activity.projectActivities,
+                project: r.Activity?.projectActivities,
                 measureUnit: r.MeasureUnit,
                 createdBy: r.createdByUser,
                 assignee: r.assigneeUser,
