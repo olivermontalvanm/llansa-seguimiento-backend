@@ -64,6 +64,28 @@ class RequestService {
         }
     }
 
+    async patchCostStatus( id, status ) {
+        try {
+            let requestResult = null;
+
+            requestResult = ( await Request.findOne( {
+                where: { id }
+            } ) );
+
+            if( !requestResult )
+                return null;
+
+            requestResult.costStatus = status;
+
+            requestResult = (await requestResult.save( ))?.toJSON( );
+
+            return requestResult;
+        } catch ( e ) {
+            console.error( e );
+            return null;
+        }
+    }
+
     async createRequest( { project, activity, item, quantity, measureUnit }, userId ) {        
         try {
             let projectResult = null;
@@ -74,7 +96,7 @@ class RequestService {
             
             projectResult = ( await Project.findOne( {
                 where: { id: project.id, title: project.title }
-            }, { raw: true } ) ).toJSON( );
+            }, { raw: true } ) )?.toJSON( );
 
             if( !projectResult ) {
                 console.error( "Could not find provided project" );
