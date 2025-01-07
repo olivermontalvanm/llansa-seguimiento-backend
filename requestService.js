@@ -37,6 +37,9 @@ class RequestService {
             if( [ "Jefe de Compras" ].includes( userRole ) )
                 query.where = { ...query.where, costStatus: "REVISADO" };
 
+            if( [ "Analista de Compras" ].includes( userRole ) )
+                query.where = { ...query.where, assignee: userId, costStatus: "REVISADO" };
+
             let result = await Request.findAll( { 
                 ...query,
                 include: [
@@ -91,6 +94,28 @@ class RequestService {
                 return null;
 
             requestResult.costStatus = status;
+
+            requestResult = (await requestResult.save( ))?.toJSON( );
+
+            return requestResult;
+        } catch ( e ) {
+            console.error( e );
+            return null;
+        }
+    }
+
+    async patchShoppingStatus( requestId, status ) {
+        try {
+            let requestResult = null;
+
+            requestResult = ( await Request.findOne( {
+                where: { id: requestId }
+            } ) );
+
+            if( !requestResult )
+                return null;
+
+            requestResult.shoppingStatus = status;
 
             requestResult = (await requestResult.save( ))?.toJSON( );
 
