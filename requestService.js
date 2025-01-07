@@ -31,7 +31,8 @@ class RequestService {
                     { model: Item },
                     { model: Activity, include: [ { model: Project, as: "projectActivities" } ] },
                     { model: MeasureUnit },
-                    { model: User, as: "createdByUser" }
+                    { model: User, as: "createdByUser" },
+                    { model: User, as: "assigneeUser" }
                 ],
                 order: [ [ "createdAt", "DESC" ] ]
             } );
@@ -48,10 +49,12 @@ class RequestService {
                 project: r.Activity.projectActivities,
                 measureUnit: r.MeasureUnit,
                 createdBy: r.createdByUser,
+                assignee: r.assigneeUser,
                 Item: undefined,
                 Activity: undefined,
                 MeasureUnit: undefined,
-                createdByUser: undefined
+                createdByUser: undefined,
+                assigneeUser: undefined
             }));
 
             return { 
@@ -78,6 +81,38 @@ class RequestService {
             requestResult.costStatus = status;
 
             requestResult = (await requestResult.save( ))?.toJSON( );
+
+            return requestResult;
+        } catch ( e ) {
+            console.error( e );
+            return null;
+        }
+    }
+
+    async patchShoppingAssignee( requestId, userId ) {
+        try {
+            let requestResult = null;
+            let userResult = null;
+
+            requestResult = ( await Request.findOne( { where: { id: requestId } } ) );
+
+            if( !requestResult )
+                return null;
+
+            if( !isNaN( userId ) && userId !== null ) {
+                userResult = ( await User.findOne( { where: { id: userId } }, { raw: true } ) )?.toJSON( );
+
+                if( !userResult )
+                    return null;
+    
+                requestResult.assignee = userResult.id;    
+            } else {
+                requestResult.assignee = null;
+            }
+
+            requestResult = (await requestResult.save( ))?.toJSON( );
+
+            requestResult.assignee = userResult;
 
             return requestResult;
         } catch ( e ) {

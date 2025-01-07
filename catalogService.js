@@ -92,6 +92,27 @@ class ProjectService {
             console.error( e );
         }
     }
+
+    async getAllShoppingAnalists( ) {
+        try {
+            let result = await User.findAll( {
+                include: [
+                    { model: Role, as: "userRole", where: { title: "Analista de Compras" }, required: true }
+                ]
+            }, { raw: true } );
+
+            let analists = result.map( r => r.toJSON( ) );
+
+            const options = analists.map( p => ( {
+                id: p.id,
+                label: `${ p.firstname } ${ p.lastname }`
+            } ) );
+
+            return options;
+        } catch ( e ) {
+            console.error( e );
+        }
+    }
 }
 
 const authService = new ProjectService( );

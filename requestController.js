@@ -13,6 +13,7 @@ class RequestController {
         this.router.get( "/getRequests", [ hasToken ], this.getRequests.bind( this ) );
         this.router.post( "/createRequest", [ hasToken ], this.postCreateRequest.bind( this ) );
         this.router.patch( "/updateCostStatus", [ hasToken ], this.patchCostStatus.bind( this ) );
+        this.router.patch( "/shoppingAssignRequest", [ hasToken ], this.patchShoppingAssignee.bind( this ) );
     }
 
     async getRequests( req, res ) {
@@ -59,6 +60,31 @@ class RequestController {
             const request = await RequestService.patchCostStatus( id, status );
 
             if( !request ) throw new Error( "Could not patch request" );
+
+            return res.status( 200 ).json( request );
+        } catch ( e ) {
+            console.error( e );
+            return res.status( 500 ).json( { message: "Internal server error" } );
+        }
+    }
+
+    async patchShoppingAssignee( req, res ) {
+        try {
+            const joiSchema = Joi.object( {
+                requestId: Joi.number( ).required( ),
+                userId: Joi.number( ).allow( null ).required( )
+            } );
+
+            const { error, value: { requestId, userId } } = joiSchema.validate( req.body, { allowUnknown: false } );
+
+            if( error ) {
+                console.error( error );
+                return res.status( 400 ).json( { message: "Bad Request" } );
+            }
+
+            const request = await RequestService.patchShoppingAssignee( requestId, userId );
+
+            if( !request ) throw new Error( "Could not assign request" );
 
             return res.status( 200 ).json( request );
         } catch ( e ) {
