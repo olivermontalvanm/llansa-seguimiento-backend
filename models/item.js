@@ -19,6 +19,6 @@ const Item = sequelize.define( "Item", {
     picture: {
         type: DataTypes.STRING
     }
-}, { tableName: "Items", timestamps: true } );
+}, { tableName: "Items", timestamps: false } );
 
 module.exports = Item;
