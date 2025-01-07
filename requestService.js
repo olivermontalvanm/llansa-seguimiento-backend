@@ -103,7 +103,7 @@ class RequestService {
 
             //  Create measure if not already exists
             if( !measureResult ) {
-                const newMeasure = ( await MeasureUnit.create( { title: activity }, { raw: true } ) ).toJSON( );
+                const newMeasure = ( await MeasureUnit.create( { title: measureUnit }, { raw: true } ) ).toJSON( );
 
                 if( !newMeasure ) {
                     console.error( "Could not create measure unit" );
